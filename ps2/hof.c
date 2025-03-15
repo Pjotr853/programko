@@ -1,23 +1,23 @@
 #include<stdio.h>
 #include<stdbool.h>
 #include <string.h>
+
 #include "hof.h"
 
-int load(struct player list[]);
-bool add_player(struct player list[], int* size, const struct player player);
 bool save(const struct player list[], const int size);
-
-
+bool add_player(struct player list[], int* size, const struct player player);
+int load(struct player list[]);
 
 
 
 bool save(const struct player list[], const int size){
+
 	FILE* fw=fopen("score","w");
-	int i=0;
 	if (fw==NULL)
 	{
 		return false;
 	}
+	int i=0;
 
 	for (i = 0; i < size; i++)
 	{
@@ -31,49 +31,52 @@ bool save(const struct player list[], const int size){
 
 int load(struct player list[]){
 	FILE* fp=fopen("score","r");
-	int i=0, j=0, size=0, help_skore=0;
-	char help_slovo[30];
 
 	if (fp==NULL)
 	{
 		return -1;
 	}
 
-
+	int size=0;
+	int i=0, j=0;
+	
 	while((fscanf(fp, "%s %d", list[size].name, &list[size].score))!= EOF){
 		size=size+1;
-		if (size==10)
-		{
-			break;
-		}
+		if (size==10)	break;
 	}
-	for ( i=0;i<size-1;i++)
-	{
+	fclose(fp);
+
+	for (i=0;i<size-1;i++)
 		for (j=0;j<size-1;j++)
 		{
 			if (list[j].score<list[j+1].score)
 			{
-	
-				strcpy(help_slovo,list[j].name);
+				
+				char slovo[30];
+				
+				strcpy(slovo,list[j].name);
 				strcpy(list[j].name,list[j+1].name);
-				strcpy(list[j+1].name,help_slovo);
-				help_skore=list[j].score;
+				strcpy(list[j+1].name,slovo);
+
+				int skore=0;
+				skore=list[j].score;
 				list[j].score=list[j+1].score;
-				list[j+1].score=help_skore;
+				list[j+1].score=skore;
 			}
 		}
-	}
-	fclose(fp);
+	
+	
 	return size;
 }
 
 
 
-bool add_player(struct player list[], int* size, const struct player player){
-	int size_of_string=(int)strlen(player.name), help_size= *size;
-	int i=0, ano=0;
 
-	if (size_of_string>30)
+bool add_player(struct player list[], int* size, const struct player player){
+	int velkost_stringu=(int)strlen(player.name);
+	
+
+	if (velkost_stringu>30)
 	{
 		return false;
 	}
@@ -81,8 +84,12 @@ bool add_player(struct player list[], int* size, const struct player player){
 	{
 		return false;
 	}
+	if (player.score < 0) {  
+        return false;
+    }
 
-	if (help_size==0)
+    int velkost= *size;
+	if (velkost==0)
 	{
 		strcpy(list[0].name,player.name);
 		list[0].score=player.score;	
@@ -90,79 +97,36 @@ bool add_player(struct player list[], int* size, const struct player player){
 		return true;
 	}
 
-	if (help_size==10)
-	{
-		 ano=0;
-		for (i = 0; i < help_size; ++i)
-		{
-			if(list[i].score<=player.score){
-				ano=1;
-			}
-		}
-
-		if (ano==1)
-		{
-			
-			for (i=help_size-2 ; i>-1 ; i--)
-			{
-				if (list[i].score<=player.score  )
-				{
-					strcpy(list[i+1].name,list[i].name);
-					list[i+1].score=list[i].score;
-				}
-				else{
-					strcpy(list[i+1].name,player.name);
-					list[i+1].score=player.score;
-					return true;
-				}
-			}
-			strcpy(list[i+1].name,list[i].name);
-			list[i+1].score=list[i].score;
-			strcpy(list[0].name,player.name);
-			list[0].score=player.score;
-			return true;
-		}
-	}
-	else{
-		*size=*size+1;
-		help_size= *size;
-		
-			for (i=help_size-2 ; i>-1 ; i--)
-			{
-				if (list[i].score<=player.score)
-				{
-					strcpy(list[i+1].name,list[i].name);
-					list[i+1].score=list[i].score;
-				}
-				else{
-					
-					if (*size==2)
-					{
-						if (list[0].score<=player.score)
-						{
-							strcpy(list[1].name,list[0].name);
-							list[1].score=list[0].score;
-							strcpy(list[0].name,player.name);
-							list[0].score=player.score;
-							return true;
-						}
-						else{
-							strcpy(list[1].name,player.name);
-							list[1].score=player.score;
-							return true;
-						}
-					}
-					strcpy(list[i+1].name,player.name);
-					list[i+1].score=player.score;
-					return true;
-				}
-			}
-			strcpy(list[i+1].name,list[i].name);
-			list[i+1].score=list[i].score;
-			strcpy(list[0].name,player.name);
-			list[0].score=player.score;
-			return true;
-		}
+	if (velkost == 10) {
+        int i=0, j=0;
+        for (i = 0; i < velkost; ++i) {
+            if (list[i].score <= player.score) {
+             
+                for ( j = velkost - 1; j > i; --j) {
+                    list[j] = list[j - 1];
+                }
+                
+                strcpy(list[i].name, player.name);
+                list[i].score = player.score;
+                return true;
+            }
+        }
+    } else {
+    	int i=0;
+        *size = *size + 1;
+        for (i = velkost - 1; i >= 0; --i) {
+            if (list[i].score <= player.score) {
+                list[i + 1] = list[i];
+            } else {
+                strcpy(list[i + 1].name, player.name);
+                list[i + 1].score = player.score;
+                return true;
+            }
+        }
+        strcpy(list[0].name, player.name);
+        list[0].score = player.score;
+        return true;
+    }
 
 	return false;
 }

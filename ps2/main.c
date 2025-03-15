@@ -1,10 +1,10 @@
 #include<stdio.h>
 #include<stdlib.h>
-#include<stdbool.h>
 
 #define SIZE 4
 #include "k.h"
 #include "hof.h"
+
 
 bool save(const struct player list[], const int size);
 void render(const struct game game);
@@ -26,30 +26,29 @@ struct game game = {
 	add_random_tile(&game);
 	add_random_tile(&game);
 	render(game);
-	bool result=false;
+
 while(is_move_possible(game)==true){
-	char velociti;
+	char smer;
 	printf("zadaj smer\n");
-	scanf("%c",&velociti);
+	scanf("%c",&smer);
 	getchar();
-	result=false;
-	if (velociti=='s')
-	{
-		result = update(&game, 1, 0);
-	}
-	if (velociti=='w')
-	{
-		 result = update(&game, -1, 0);
-	}
-	if (velociti=='d')
+	bool result=false;
+	if (smer=='d')
 	{
 		 result = update(&game, 0,1);
 	}
-	if (velociti=='a')
+	if (smer=='a')
 	{
 		 result = update(&game, 0,-1);
 	}
-	
+	if (smer=='s')
+	{
+		result = update(&game, 1, 0);
+	}
+	if (smer=='w')
+	{
+		 result = update(&game, -1, 0);
+	}
 	
 	if (result==true)
 	{
@@ -57,7 +56,7 @@ while(is_move_possible(game)==true){
 	}
 	if (is_game_won(game))
 	{
-		printf("vyhral si\n");
+		printf("vyhra si\n");
 	}
 	render(game);
 
@@ -67,22 +66,23 @@ struct player list[10];
 	int pocet;
 	pocet=load(list);
 	printf("pocet = %d\n",pocet );
-	printf("\n\n\n\n\n");
+	printf("\n\n\n\n\n\n");
 
 
 	if (save(list,pocet))
 	{
-		printf("save \n");
+		printf("returt true\n");
 	}
 
+
 struct player player = {
-    .name = "fero",
+    .name = "johna",
     .score = 10
 };
 if (add_player(list,&pocet, player))
 	{
 		
-		printf("add_player true\n");
+		printf("returt true\n");
 	}
 
 	return 0;
