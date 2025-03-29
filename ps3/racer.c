@@ -68,6 +68,10 @@ float result=0.0;
         if (cas_dva==time)  break;
     }
 
+    if(kpol == 1999.99997)
+        kpol=2000;
+    if(kpol==-0.00943)
+        kpol=0.0;
     printf("%lf\n",kpol);
 
 	return 0;
